@@ -4,8 +4,11 @@
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2.0.1": {},
   },
+  "mounts": [
+    "source=${localEnv:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached"
+  ],
   "containerEnv": {
-    "TF_PLUGIN_CACHE_DIR": "/workspaces/terraform-aws-terraform-aws-teleport-cluster/.devcontainer/tmp/.terraform.d/"
+    "TF_PLUGIN_CACHE_DIR": "${containerWorkspaceFolder}/.devcontainer/tmp/.terraform.d/"
   },
   "customizations": {
     "vscode": {
@@ -17,19 +20,27 @@
         "editor.formatOnType": false,
         "editor.inlineSuggest.enabled": true,
         "terminal.integrated.shell.linux": "/bin/bash",
+        "python.formatting.provider": "black",
+        "python.defaultInterpreterPath": "/usr/bin/python3",
         "[markdown]": {
           "editor.rulers": [
             80
           ]
-        }
+        },
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter"
+        },
       },
       "extensions": [
         "darkriszty.markdown-table-prettify",
         "editorconfig.editorconfig",
         "github.copilot",
+        "github.copilot-chat",
         "github.vscode-github-actions",
+        "github.vscode-pull-request-github",
         "hashicorp.terraform",
         "ms-azuretools.vscode-docker",
+        "ms-python.black-formatter",
         "timonwong.shellcheck",
         "VisualStudioExptTeam.vscodeintellicode",
       ],

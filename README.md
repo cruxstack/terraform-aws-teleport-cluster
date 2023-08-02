@@ -11,7 +11,7 @@ This project is under development. See `dev` branch for latest activity.
 
 ```hcl
 module "teleport_cluster" {
-  source  = "sgtoj/teleport-cluster/aws"
+  source  = "cruxstack/teleport-cluster/aws"
   version = "x.x.x"
 
   # TBD
@@ -29,15 +29,15 @@ In addition to the variables documented below, this module includes several
 other optional variables (e.g., `name`, `tags`, etc.) provided by the
 `cloudposse/label/null` module. Please refer to the [`cloudposse/label` documentation](https://registry.terraform.io/modules/cloudposse/label/null/latest) for more details on these variables.
 
-| Name                                 | Description                                                                                                   |                 Type                 | Default  | Required |
-|--------------------------------------|---------------------------------------------------------------------------------------------------------------|:------------------------------------:|:--------:|:--------:|
-| `placehold`               | N/A           |                string                |   null   |    No    |
+| Name        | Description |  Type  | Default | Required |
+|-------------|-------------|:------:|:-------:|:--------:|
+| `placehold` | N/A         | string |  null   |    No    |
 
 ## Outputs
 
-| Name                                | Description                                                                   |
-|-------------------------------------|-------------------------------------------------------------------------------|
-| `placehold`                   |  N/A                                      |
+| Name        | Description |
+|-------------|-------------|
+| `placehold` | N/A         |
 
 ## Contributing
 

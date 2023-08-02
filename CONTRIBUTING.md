@@ -14,11 +14,11 @@ The development container is based on Ubuntu 22.04 (Jammy) and includes the
 following tools:
 
 - AWS CLI
-- Node.js
-- TypeScript
+- Python v3.8
+- Python Packages: `boto3`, `black`
 - Docker CLI
+- Shellcheck
 - Terraform
-- Open Policy Agent
 
 ### Prerequisites
 
@@ -34,8 +34,8 @@ following tools:
 1. Clone and open this repository:
 
     ```bash
-    git clone https://github.com/sgtoj/terraform-aws-terraform-aws-teleport-cluster.git
-    code terraform-aws-terraform-aws-teleport-cluster
+    git clone https://github.com/sgtoj/terraform-aws-teleport-cluster.git
+    code terraform-aws-teleport-cluster
     ```
 
 2. When prompted to "Reopen in Container", click "Reopen in Container". This
