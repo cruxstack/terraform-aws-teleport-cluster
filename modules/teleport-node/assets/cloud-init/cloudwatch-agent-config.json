@@ -1,0 +1,44 @@
+{
+  "agent": {
+    "run_as_user": "cwagent"
+  },
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log",
+            "log_group_name": "${cluster_log_group_name}",
+            "log_stream_name": "/ec2/instance/{instance_id}/amazon-cloudwatch-agent.log",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%SZ"
+          },
+          {
+            "file_path": "/var/log/dmesg",
+            "log_group_name": "${cluster_log_group_name}",
+            "log_stream_name": "/ec2/instance/{instance_id}/dmesg"
+          },
+          {
+            "file_path": "/var/log/messages",
+            "log_group_name": "${cluster_log_group_name}",
+            "log_stream_name": "/ec2/instance/{instance_id}/messages",
+            "timestamp_format": "%b %d %H:%M:%S"
+          },
+          {
+            "file_path": "/var/log/cloud-init.log",
+            "log_group_name": "${cluster_log_group_name}",
+            "log_stream_name": "/ec2/instance/{instance_id}/cloud-init.log",
+            "multi_line_start_pattern": "\\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} cloud-init\\[[\\w]+]:",
+            "timestamp_format": "%B %d %H:%M:%S",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/var/log/cloud-init-output.log",
+            "log_group_name": "${cluster_log_group_name}",
+            "log_stream_name": "/ec2/instance/{instance_id}/cloud-init-output.log",
+            "multi_line_start_pattern": "Cloud-init v. \\d+.\\d+-\\d+"
+          }
+        ]
+      }
+    }
+  }
+}

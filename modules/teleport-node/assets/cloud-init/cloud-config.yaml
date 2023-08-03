@@ -1,0 +1,25 @@
+#cloud-config
+packages:
+  - amazon-cloudwatch-agent
+package_update: true
+package_upgrade: true
+write_files:
+  - path: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.d/user.json
+    content: ${cloudwatch_agent_config_encoded}
+    encoding: base64
+    permissions: "0644"
+  - path: /etc/teleport.d/teleport.tmpl.yaml
+    content: ${teleport_config_tmpl_encoded}
+    encoding: base64
+    permissions: "0644"
+  - path: /etc/teleport.d/conf
+    content: ${teleport_envs_encoded}
+    encoding: base64
+    permissions: "0644"
+  - path: /etc/teleport.d/use-letsencrypt
+    content: use-letsencrypt
+    permissions: "0644"
+power_state:
+  delay: now
+  mode: reboot
+  timeout: 10

@@ -1,0 +1,14 @@
+#!/bin/bash
+# shellcheck disable=SC1091
+set -e -x
+
+source "/etc/teleport.d/conf"
+
+# copy certificates into place
+/bin/aws s3 sync "s3://${TELEPORT_S3_BUCKET}/live/${TELEPORT_DOMAIN_NAME}" /var/lib/teleport
+
+# disable influxdb
+systemctl stop telegraf
+systemctl stop influxdb
+systemctl disable telegraf
+systemctl disable influxdb
