@@ -22,8 +22,6 @@ Deploy it using the block below. For the first time deployments, it make take 10
 minutes before the web portal is available.
 
 ```hcl
-
-```hcl
 module "teleport_cluster" {
   source  = "cruxstack/teleport-cluster/aws"
   version = "x.x.x"
