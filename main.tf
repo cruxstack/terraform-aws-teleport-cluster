@@ -381,7 +381,9 @@ module "security_group" {
   source  = "cloudposse/security-group/aws"
   version = "2.2.0"
 
-  vpc_id = var.vpc_id
+  vpc_id                     = var.vpc_id
+  create_before_destroy      = false
+  preserve_security_group_id = true
 
   rules = [{
     key                      = "gropu-egress"

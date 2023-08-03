@@ -406,8 +406,10 @@ module "security_group" {
   source  = "cloudposse/security-group/aws"
   version = "2.2.0"
 
-  vpc_id           = local.vpc_id
-  allow_all_egress = true
+  vpc_id                     = local.vpc_id
+  create_before_destroy      = false
+  preserve_security_group_id = true
+  allow_all_egress           = true
 
   rules = [{
     key                      = "group"
