@@ -1,0 +1,30 @@
+#!/bin/bash
+# shellcheck disable=SC1091,SC2002
+set -e -o pipefail
+
+source /etc/teleport.d/conf
+
+TCTL=/usr/local/bin/tctl
+
+PROXY_TOKEN=$(uuid -v4)
+${TCTL} nodes add --roles=proxy --ttl=4h --token="${PROXY_TOKEN}"
+aws ssm put-parameter --name "/teleport/${TELEPORT_CLUSTER_NAME}/tokens/proxy" --region "${EC2_REGION}" --type="SecureString" --value="${PROXY_TOKEN}" --overwrite
+
+NODE_TOKEN=$(uuid -v4)
+${TCTL} nodes add --roles=node,app,db --ttl=4h --token="${NODE_TOKEN}"
+aws ssm put-parameter --name "/teleport/${TELEPORT_CLUSTER_NAME}/tokens/node" --region "${EC2_REGION}" --type="SecureString" --value="${NODE_TOKEN}" --overwrite
+
+KUBE_TOKEN=$(uuid -v4)
+${TCTL} nodes add --roles=kube --ttl=4h --token="${KUBE_TOKEN}"
+aws ssm put-parameter --name "/teleport/${TELEPORT_CLUSTER_NAME}/tokens/kube" --region "${EC2_REGION}" --type="SecureString" --value="${KUBE_TOKEN}" --overwrite
+
+APP_TOKEN=$(uuid -v4)
+${TCTL} nodes add --roles=app --ttl=4h --token="${APP_TOKEN}"
+aws ssm put-parameter --name "/teleport/${TELEPORT_CLUSTER_NAME}/tokens/app" --region "${EC2_REGION}" --type="SecureString" --value="${APP_TOKEN}" --overwrite
+
+DATABASE_TOKEN=$(uuid -v4)
+${TCTL} nodes add --roles=db --ttl=4h --token="${DATABASE_TOKEN}"
+aws ssm put-parameter --name "/teleport/${TELEPORT_CLUSTER_NAME}/tokens/db" --region "${EC2_REGION}" --type="SecureString" --value="${DATABASE_TOKEN}" --overwrite
+
+CA_PIN_HASH=$(tctl status | grep "CA pin" | awk '{print $3}')
+aws ssm put-parameter --name "/teleport/${TELEPORT_CLUSTER_NAME}/ca-pin-hash" --region "${EC2_REGION}" --type="String" --value="${CA_PIN_HASH}" --overwrite
