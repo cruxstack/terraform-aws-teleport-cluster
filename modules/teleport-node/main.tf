@@ -1,8 +1,3 @@
-moved {
-  from = module.security_group.aws_security_group.default
-  to   = module.security_group.aws_security_group.cbd
-}
-
 locals {
   teleport_auth_address      = var.teleport_auth_address
   teleport_bucket_name       = var.teleport_bucket_name
