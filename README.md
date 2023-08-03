@@ -30,12 +30,12 @@ module "teleport_cluster" {
 
   teleport_letsencrypt_email = "letencrypt@example.com"
   teleport_runtime_version   = "10.3.15"
-  dns_parent_zone_id         = Z0000000000000000000
-  dns_parent_zone_name       = demo.example.com
+  teleport_setup_mode        = false
+  dns_parent_zone_id         = "Z0000000000000000000"
+  dns_parent_zone_name       = "demo.example.com"
   vpc_id                     = "vpc-00000000000000"
   vpc_subnet_ids             = ["subnet-00000000000000", "subnet-11111111111111111", "subnet-22222222222222222"]
   vpc_public_subnet_ids      = ["subnet-33333333333333", "subnet-44444444444444444", "subnet-55555555555555555"]
-  teleport_setup_mode        = false
 }
 ```
 
