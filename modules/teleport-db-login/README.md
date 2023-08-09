@@ -6,8 +6,6 @@ for a secure and reusable way to handle database authentication.
 
 ## Overview
 
-This submodule performs the following actions:
-
 - Retrieves and sets the database connection information such as host, port, SSL
   CA, SSL certificate, and SSL key.
 - Executes the `db-login` command of Teleport's CLI to authenticate with the
