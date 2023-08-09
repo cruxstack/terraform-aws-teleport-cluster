@@ -9,7 +9,7 @@ locals {
 
 data "external" "db_connection_info" {
   program = [
-    "${path.module}/externals/tsh.sh",
+    "${path.module}/assets/tsh.sh",
     "db-login",
     "stdin"
   ]
