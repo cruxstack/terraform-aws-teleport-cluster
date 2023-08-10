@@ -19,6 +19,9 @@ RUN SYSTEM_ARCH=$(dpkg --print-architecture) \
     && terraform version \
     && rm terraform_${TERRAFORM_VERSION}_linux_${SYSTEM_ARCH}.zip
 
+# install tflint
+RUN curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+
 # install docker
 COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
 

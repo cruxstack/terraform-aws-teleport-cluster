@@ -428,11 +428,6 @@ resource "aws_s3_object" "image_files" {
 
 # =================================================================== lookup ===
 
-data "aws_ssm_parameter" "amzn2_image_id" {
-  count = module.teleport_cluster_label.enabled ? 1 : 0
-  name  = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-ebs"
-}
-
 data "aws_ami" "official_image" {
   count = module.teleport_cluster_label.enabled ? 1 : 0
 
