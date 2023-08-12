@@ -41,7 +41,8 @@ module "teleport_cluster" {
 
 In addition to the variables documented below, this module includes several
 other optional variables (e.g., `name`, `tags`, etc.) provided by the
-`cloudposse/label/null` module. Please refer to the [`cloudposse/label` documentation](https://registry.terraform.io/modules/cloudposse/label/null/latest) for more details on these variables.
+`cloudposse/label/null` module. Please refer to its [documentation](https://registry.terraform.io/modules/cloudposse/label/null/latest)
+for more details on these variables.
 
 | Name                         | Description                                                                                                       | Type           | Default | Required |
 |------------------------------|-------------------------------------------------------------------------------------------------------------------|----------------|---------|:--------:|
