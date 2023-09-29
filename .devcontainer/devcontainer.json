@@ -2,10 +2,11 @@
   "name": "Terraform",
   "dockerFile": "Dockerfile",
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2.0.1": {}
+    "ghcr.io/devcontainers/features/docker-in-docker:2.5.0": {}
   },
   "mounts": [
-    "source=${localEnv:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached"
+    "source=${localEnv:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.tsh,target=/home/vscode/.tsh,type=bind,consistency=cached"
   ],
   "containerEnv": {
     "TF_PLUGIN_CACHE_DIR": "${containerWorkspaceFolder}/.devcontainer/tmp/.terraform.d/"

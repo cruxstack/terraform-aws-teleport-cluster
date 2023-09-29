@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/vscode/devcontainers/base:jammy
+FROM mcr.microsoft.com/devcontainers/base:jammy
 
 # install aws
 RUN SYSTEM_ARCH=$(uname -m) \
@@ -22,8 +22,16 @@ RUN SYSTEM_ARCH=$(dpkg --print-architecture) \
 # install tflint
 RUN curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
 
-# install docker
-COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
+# install teleport tsh
+ENV TELEPORT_VERSION=10.3.16
+RUN SYSTEM_ARCH=$(dpkg --print-architecture) \
+    && curl -OLk https://get.gravitational.com/teleport-v${TELEPORT_VERSION}-linux-${SYSTEM_ARCH}-bin.tar.gz \
+    && tar -xvf teleport-v${TELEPORT_VERSION}-linux-${SYSTEM_ARCH}-bin.tar.gz teleport/tsh teleport/tctl \
+    && mv teleport/tsh /usr/local/bin/tsh \
+    && mv teleport/tctl /usr/local/bin/tctl \
+    && chmod +x  /usr/local/bin/tsh \
+    && chmod +x  /usr/local/bin/tctl \
+    && rm -rf teleport/ teleport-*.tar.gz
 
 # install pip
 RUN apt-get update
@@ -38,5 +46,4 @@ RUN python3 -m pip install \
 
 # verify installs
 RUN terraform --version \
-    && aws --version \
-    && docker --version
+    && aws --version
