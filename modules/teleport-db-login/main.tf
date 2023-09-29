@@ -1,10 +1,10 @@
 locals {
   db_connection_info     = data.external.db_connection_info.result
-  db_connection_host     = module.this.enabled ? local.db_config["host"] : ""
-  db_connection_port     = module.this.enabled ? local.db_config["port"] : ""
-  db_connection_ssl_ca   = module.this.enabled ? local.db_config["ca"] : ""
-  db_connection_ssl_cert = module.this.enabled ? local.db_config["cert"] : ""
-  db_connection_ssl_key  = module.this.enabled ? local.db_config["key"] : ""
+  db_connection_host     = module.this.enabled ? local.db_connection_info["host"] : ""
+  db_connection_port     = module.this.enabled ? local.db_connection_info["port"] : ""
+  db_connection_ssl_ca   = module.this.enabled ? local.db_connection_info["ca"] : ""
+  db_connection_ssl_cert = module.this.enabled ? local.db_connection_info["cert"] : ""
+  db_connection_ssl_key  = module.this.enabled ? local.db_connection_info["key"] : ""
 }
 
 data "external" "db_connection_info" {
