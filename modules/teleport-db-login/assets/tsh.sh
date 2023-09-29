@@ -7,8 +7,8 @@ function db_login() {
   TSH_TARGET_CLUSTER=${1:?}
   TSH_TARGET_DB=${2:?}
 
-  tsh db login --cluster "${TSH_CLUSTER_NAME}" "${TSH_TARGET_DB}" 1>/dev/null
-  tsh db config --cluster "${TSH_CLUSTER_NAME}" --format=json "${TSH_TARGET_DB}"
+  tsh db login --cluster "${TSH_TARGET_CLUSTER}" "${TSH_TARGET_DB}" 1>/dev/null
+  tsh db config --cluster "${TSH_TARGET_CLUSTER}" --format=json "${TSH_TARGET_DB}"
 }
 
 # ------------------------------------------------------------------- script ---
