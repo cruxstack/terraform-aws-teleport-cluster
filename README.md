@@ -2,7 +2,8 @@
 
 This Terraform module deploys a Teleport cluster in high availability (HA)
 configuration. [Teleport](https://github.com/gravitational/teleport) is a modern
-zero-trust solution by Gravitational.
+zero-trust solution by Gravitational. This module has been tested with Teleport
+version v10 and v14.
 
 ### Features
 
@@ -15,6 +16,8 @@ zero-trust solution by Gravitational.
   corresponding increase in complexity.
 - **Integrated**: Works well with your existing infrastructure by following
   CloudPosse's context and labeling patterns.
+- **Automation** to create teleport connection to resources on-demand via
+  included submodules.
 
 ## Usage
 
@@ -27,7 +30,7 @@ module "teleport_cluster" {
   version = "x.x.x"
 
   teleport_letsencrypt_email = "letencrypt@example.com"
-  teleport_runtime_version   = "10.3.15"
+  teleport_runtime_version   = "14.3.3"
   teleport_setup_mode        = false
   dns_parent_zone_id         = "Z0000000000000000000"
   dns_parent_zone_name       = "demo.example.com"

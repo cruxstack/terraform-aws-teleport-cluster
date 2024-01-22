@@ -25,37 +25,28 @@ function get_random_ephemeral_port() {
 }
 
 function get_gateway_address() {
-  TELEPORT_CLUSTER=${1:?}
-  TELEPORT_GATEWAY_NAME=${2:?}
+  TP_PROXY=${1:?}
+  TP_CLUSTER=${2:?}
+  TP_GATEWAY_NODE=${3:?}
+  TP_GATEWAY_USER=${4:-root}
 
-  NODE_HOST=$(
-    tsh ls --cluster "${TELEPORT_CLUSTER}" \
-    --query="labels[\"service\"] == \"${TELEPORT_GATEWAY_NAME}\"" \
+  TUNNEL_GATEWAY_HOST=$(
+    tsh ls --proxy "${TP_PROXY}" --cluster "${TP_CLUSTER}" \
+    --query="labels[\"service\"] == \"${TP_GATEWAY_NODE}\"" \
     --format names | head -n 1
   )
-  echo "root@${NODE_HOST}"
-}
-
-function open_tunnel() {
-  TSH_CLUSTER_NAME=${1:?}
-  TUNNEL_LOCAL_PORT=${2:?}
-  TUNNEL_TARGET_HOST=${3:?}
-  TUNNEL_TARGET_PORT=${4:?}
-  TUNNEL_GATEWAY_ADDRESS=${5:?}
-
-  tsh ssh --cluster "${TSH_CLUSTER_NAME}" \
-    -N -L "${TUNNEL_LOCAL_PORT}:${TUNNEL_TARGET_HOST}:${TUNNEL_TARGET_PORT}" \
-    "${TUNNEL_GATEWAY_ADDRESS}"
+  echo "${TP_GATEWAY_USER}@${TUNNEL_GATEWAY_HOST}"
 }
 
 function open_background_tunnel() {
-  TSH_CLUSTER_NAME=${1:?}
-  TUNNEL_LOCAL_PORT=${2:?}
-  TUNNEL_TARGET_HOST=${3:?}
-  TUNNEL_TARGET_PORT=${4:?}
-  TUNNEL_GATEWAY_ADDRESS=${5:?}
+  TP_PROXY=${1:?}
+  TP_CLUSTER=${2:?}
+  TUNNEL_LOCAL_PORT=${3:?}
+  TUNNEL_TARGET_HOST=${4:?}
+  TUNNEL_TARGET_PORT=${5:?}
+  TUNNEL_GATEWAY_ADDRESS=${6:?}
 
-  tsh ssh --cluster "${TSH_CLUSTER_NAME}" \
+  tsh ssh --proxy "${TP_PROXY}" --cluster "${TP_CLUSTER}" \
     -N -L "${TUNNEL_LOCAL_PORT}:${TUNNEL_TARGET_HOST}:${TUNNEL_TARGET_PORT}" \
     "${TUNNEL_GATEWAY_ADDRESS}" &
   TUNNEL_PID=$!
@@ -74,11 +65,12 @@ function open_background_tunnel() {
 }
 
 function open_background_tunnel_with_timeout() {
-  TSH_CLUSTER_NAME=${1:?}
-  TUNNEL_LOCAL_PORT=${2:?}
-  TUNNEL_TARGET_HOST=${3:?}
-  TUNNEL_TARGET_PORT=${4:?}
-  TUNNEL_GATEWAY_ADDRESS=${5:?}
+  TP_PROXY=${1:?}
+  TP_CLUSTER=${2:?}
+  TUNNEL_LOCAL_PORT=${3:?}
+  TUNNEL_TARGET_HOST=${4:?}
+  TUNNEL_TARGET_PORT=${5:?}
+  TUNNEL_GATEWAY_ADDRESS=${6:?}
   TUNNEL_TIMEOUT=${6:-$TUNNEL_TIMEOUT}
 
   PARENT_PROCESS_ID="$(ps -p "${PPID}" -o "ppid=")"
@@ -87,7 +79,8 @@ function open_background_tunnel_with_timeout() {
   nohup timeout "${TUNNEL_TIMEOUT}" \
     "${SCRIPT_ROOT}/tunneler.sh" \
     "open_background_tunnel" \
-    "${TSH_CLUSTER_NAME}" \
+    "${TP_PROXY}" \
+    "${TP_CLUSTER}" \
     "${TUNNEL_LOCAL_PORT}" \
     "${TUNNEL_TARGET_HOST}" \
     "${TUNNEL_TARGET_PORT}" \
@@ -109,16 +102,18 @@ function open_background_tunnel_with_timeout() {
 # --------------------------------------------------------------------- main ---
 
 function create() {
-  TELEPORT_CLUSTER=${1:?}
-  TELEPORT_GATEWAY_NAME=${2:?}
-  TUNNEL_TARGET_HOST=${3:?}
-  TUNNEL_TARGET_PORT=${4:?}
+  TP_PROXY=${1:?}
+  TP_CLUSTER=${2:?}
+  TP_GATEWAY_NODE=${3:?}
+  TUNNEL_TARGET_HOST=${4:?}
+  TUNNEL_TARGET_PORT=${5:?}
 
   TUNNEL_LOCAL_PORT=$(get_random_ephemeral_port)
-  TUNNEL_GATEWAY_ADDRESS=$(get_gateway_address "${TELEPORT_CLUSTER}" "${TELEPORT_GATEWAY_NAME}")
+  TUNNEL_GATEWAY_ADDRESS=$(get_gateway_address "${TP_PROXY}" "${TP_CLUSTER}" "${TP_GATEWAY_NODE}")
 
   open_background_tunnel_with_timeout \
-    "${TELEPORT_CLUSTER}" \
+    "${TP_PROXY}" \
+    "${TP_CLUSTER}" \
     "${TUNNEL_LOCAL_PORT}" \
     "${TUNNEL_TARGET_HOST}" \
     "${TUNNEL_TARGET_PORT}" \
@@ -134,13 +129,14 @@ if [[ "${1}" == "create" && "${2}" == "stdin" ]]; then
     # handler if input is stdin (e.g. from terraform)
 
     INPUT="$(dd 2>/dev/null)"
-    TELEPORT_CLUSTER=$(echo "${INPUT}" | jq -r .teleport_cluster)
-    TELEPORT_GATEWAY_NAME=$(echo "${INPUT}" | jq -r .teleport_gateway_name)
-    TUNNEL_TARGET_HOST=$(echo "${INPUT}" | jq -r .target_host)
-    TUNNEL_TARGET_PORT=$(echo "${INPUT}" | jq -r .target_port)
+    TP_PROXY=$(echo "${INPUT}" | jq -r .tp_proxy)
+    TP_CLUSTER=$(echo "${INPUT}" | jq -r .tp_cluster)
+    TP_GATEWAY_NODE=$(echo "${INPUT}" | jq -r .tp_gateway_node)
+    TARGET_HOST=$(echo "${INPUT}" | jq -r .target_host)
+    TARGET_PORT=$(echo "${INPUT}" | jq -r .target_port)
 
-    TUNNEL_LOCAL_PORT=$(create "${TELEPORT_CLUSTER}" "${TELEPORT_GATEWAY_NAME}" "${TUNNEL_TARGET_HOST}" "${TUNNEL_TARGET_PORT}")
-    echo "{\"host\":\"localhost\",\"port\":\"${TUNNEL_LOCAL_PORT}\"}"
+    LOCAL_PORT=$(create "${TP_PROXY}" "${TP_CLUSTER}" "${TP_GATEWAY_NODE}" "${TARGET_HOST}" "${TARGET_PORT}")
+    echo "{\"host\":\"localhost\",\"port\":\"${LOCAL_PORT}\"}"
 
 elif [[ "${1}" == "create" ]]; then
 
@@ -148,8 +144,8 @@ elif [[ "${1}" == "create" ]]; then
 
     shift
 
-    TUNNEL_LOCAL_PORT=$(create "${@}")
-    echo "localhost:${TUNNEL_LOCAL_PORT}"
+    LOCAL_PORT=$(create "${@}")
+    echo "localhost:${LOCAL_PORT}"
 
 else
 

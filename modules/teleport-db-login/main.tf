@@ -15,7 +15,8 @@ data "external" "db_connection_info" {
   ]
 
   query = {
-    target_cluster = var.target_cluster
-    target_db      = var.target_db
+    tp_proxy   = coalesce(var.tp_proxy, var.tp_cluster)
+    tp_cluster = var.tp_cluster
+    target_db  = var.target_db
   }
 }

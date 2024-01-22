@@ -20,8 +20,8 @@ module "teleport_db_login" {
   source  = "cruxstack/teleport-cluster/aws//modules/teleport-db-login"
   version = "x.x.x"
 
-  target_cluster = "your-target-cluster.teleport.example.com"
-  target_db      = "your-target-database"
+  tp_cluster = "your-target-cluster.teleport.example.com"
+  target_db  = "your-target-database"
 }
 
 # configure pgsql (eg, `cyrilgdn/postgresql`) provider to connect to the db
@@ -51,10 +51,13 @@ provider "postgresql" {
 
 ## Inputs
 
-| Name             | Description                                              | Type     | Default | Required |
-|------------------|----------------------------------------------------------|----------|---------|:--------:|
-| `target_cluster` | Domain to the Teleport cluster for database login.       | `string` | n/a     |   yes    |
-| `target_db`      | Name of the target database within the Teleport cluster. | `string` | n/a     |   yes    |
+| Name             | Description                                                       | Type     | Default | Required |
+|------------------|-------------------------------------------------------------------|----------|---------|:--------:|
+| `tp_proxy`       | Domain to the Teleport cluster proxy for database login.          | `string` | ""      |    no    |
+| `tp_cluster`     | Domain to the Teleport cluster for database login.                | `string` | n/a     |   yes    |
+| `target_db`      | Name of the target database resource within the Teleport cluster. | `string` | n/a     |   yes    |
+| `target_db_name` | Name of the database within the target database resource.         | `string` | ""      |    no    |
+| `target_db_user` | Name of the user to use when connecting to the database resource. | `string` | ""      |    no    |
 
 ## Outputs
 
