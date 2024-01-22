@@ -1,15 +1,18 @@
 FROM mcr.microsoft.com/devcontainers/base:jammy
 
+RUN apt update && apt install -y \
+    vim
+
 # install aws
 RUN SYSTEM_ARCH=$(uname -m) \
-    && curl "https://awscli.amazonaws.com/awscli-exe-linux-${SYSTEM_ARCH}.zip" -o "awscliv2.zip" \
-    && unzip awscliv2.zip \
+    && curl "https://awscli.amazonaws.com/awscli-exe-linux-${SYSTEM_ARCH}-2.13.33.zip" -o "awscliv2.zip" \
+    && unzip -qq awscliv2.zip \
     && aws/install \
     && aws --version \
     && rm -rf aws
 
 # install terraform
-ENV TERRAFORM_VERSION=1.5.1
+ENV TERRAFORM_VERSION=1.6.3
 ENV TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache
 RUN mkdir -p $TF_PLUGIN_CACHE_DIR
 RUN SYSTEM_ARCH=$(dpkg --print-architecture) \
@@ -45,5 +48,5 @@ RUN python3 -m pip install \
     black
 
 # verify installs
-RUN terraform --version \
-    && aws --version
+RUN terraform --version
+

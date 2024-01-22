@@ -2,7 +2,7 @@
   "name": "Terraform",
   "dockerFile": "Dockerfile",
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2.5.0": {}
+    "ghcr.io/devcontainers/features/docker-in-docker:2.7.1": {}
   },
   "mounts": [
     "source=${localEnv:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached",

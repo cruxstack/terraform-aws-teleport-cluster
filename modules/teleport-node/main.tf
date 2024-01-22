@@ -966,4 +966,3 @@ resource "aws_lb_listener" "proxy_web" {
     type             = "forward"
   }
 }
-

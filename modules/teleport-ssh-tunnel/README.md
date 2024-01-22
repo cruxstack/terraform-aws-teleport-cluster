@@ -42,12 +42,13 @@ provider "redshift" {
 
 ## Inputs
 
-| Name                | Description              | Type     | Default | Required |
-|---------------------|--------------------------|----------|---------|:--------:|
-| `terraform_cluster` | Teleport cluster domain. | `string` | n/a     |   yes    |
-| `terraform_gateway` | Teleport gateway.        | `string` | n/a     |   yes    |
-| `target_host`       | Target host.             | `string` | n/a     |   yes    |
-| `target_port`       | Target port.             | `number` | n/a     |   yes    |
+| Name              | Description                                              | Type     | Default | Required |
+|-------------------|----------------------------------------------------------|----------|---------|:--------:|
+| `tp_proxy`        | Domain to the Teleport cluster proxy for database login. | `string` | ""      |    no    |
+| `tp_cluster`      | Domain to the Teleport cluster for database login.       | `string` | n/a     |   yes    |
+| `tp_gateway_node` | Teleport node to use as the gateway for the connection.  | `string` | n/a     |   yes    |
+| `target_host`     | Target user.                                             | `number` | n/a     |   yes    |
+| `target_port`     | Target port.                                             | `number` | n/a     |   yes    |
 
 ## Outputs
 
