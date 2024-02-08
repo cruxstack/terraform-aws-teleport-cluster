@@ -6,13 +6,14 @@ locals {
   aws_region_name  = var.aws_region_name != "" ? var.aws_region_name : try(data.aws_region.current[0].name, "")
   aws_kv_namespace = trim(coalesce(var.aws_kv_namespace, "teleport-cluster/${module.teleport_cluster_label.id}"), "/")
 
-  teleport_cluster_name      = join("-", [module.teleport_cluster_label.name, module.teleport_cluster_label.stage, module.teleport_cluster_label.environment])
-  teleport_image_name        = "gravitational-teleport-ami-oss-${var.teleport_runtime_version}"
-  teleport_image_id          = try(data.aws_ami.official_image[0].id, "")
-  teleport_letsencrypt_email = var.teleport_letsencrypt_email
-  teleport_setup_mode        = var.teleport_setup_mode
-  teleport_experimental_mode = var.teleport_experimental_mode
-  teleport_aws_account_id    = "126027368216" # gravitational teleport's aws account id for ami filtering
+  teleport_cluster_name          = join("-", [module.teleport_cluster_label.name, module.teleport_cluster_label.stage, module.teleport_cluster_label.environment])
+  teleport_runtime_version_major = split(".", var.teleport_runtime_version)[0]
+  teleport_image_name            = local.teleport_runtime_version_major >= 15 ? "teleport-oss-${var.teleport_runtime_version}-x86-64-*" : "gravitational-teleport-ami-oss-${var.teleport_runtime_version}"
+  teleport_image_id              = try(data.aws_ami.official_image[0].id, "")
+  teleport_letsencrypt_email     = var.teleport_letsencrypt_email
+  teleport_setup_mode            = var.teleport_setup_mode
+  teleport_experimental_mode     = var.teleport_experimental_mode
+  teleport_aws_account_id        = local.teleport_runtime_version_major >= 15 ? "146628656107" : "126027368216" # gravitational teleport's aws account id for ami filtering - https://goteleport.com/docs/deploy-a-cluster/deployments/aws-starter-cluster-terraform/
 
   artifacts_bucket_name = coalesce(var.artifacts_bucket_name, local.teleport_bucket_name)
   logs_bucket_name      = coalesce(var.logs_bucket_name, local.teleport_bucket_name)
