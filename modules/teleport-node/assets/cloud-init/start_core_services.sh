@@ -5,7 +5,10 @@ function cwagent_ctl {
 }
 export -f cwagent_ctl
 
+touch /var/log/cloud-init-output.log
 chmod 644 /var/log/cloud-init-output.log
+
+touch /var/log/messages
 chmod 644 /var/log/messages
 
 cwagent_ctl -a fetch-config -s -m ec2 \
