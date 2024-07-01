@@ -67,7 +67,7 @@ locals {
         data_dir = "/var/lib/teleport"
         storage = {
           type               = "dynamodb"
-          region             = "us-east-1"
+          region             = local.aws_region_name
           table_name         = local.teleport_ddb_table_state_name
           audit_events_uri   = "dynamodb://${local.teleport_ddb_table_events_name}"
           audit_sessions_uri = "s3://${local.teleport_bucket_name}/records"
@@ -128,7 +128,7 @@ locals {
         enabled = "yes"
         aws = [{
           types   = ["rds", "redshift"]
-          regions = ["us-east-1"]
+          regions = [local.aws_region_name]
           tags = {
             "*" : "*"
           }
