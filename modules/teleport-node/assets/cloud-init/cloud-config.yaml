@@ -16,6 +16,10 @@ write_files:
     content: ${teleport_envs_encoded}
     encoding: base64
     permissions: "0644"
+  - path: /etc/default/teleport
+    content: ${teleport_envs_encoded}
+    encoding: base64
+    permissions: "0644"
   - path: /etc/teleport.d/use-letsencrypt
     content: use-letsencrypt
     permissions: "0644"
