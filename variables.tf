@@ -57,6 +57,14 @@ variable "logs_bucket_name" {
   default     = ""
 }
 
+# ---------------------------------------------------------------------- ddb ---
+
+variable "ddb_deletion_protection_enabled" {
+  type        = bool
+  description = "Toggle deletion protection mode for all DynamoDB tables"
+  default     = true
+}
+
 # ---------------------------------------------------------------------- dns ---
 
 variable "dns_parent_zone_id" {
