@@ -353,7 +353,7 @@ resource "aws_launch_template" "this" {
 
   name                   = module.node_type_label.id
   image_id               = local.teleport_image_id
-  user_data              = data.template_cloudinit_config.this[0].rendered
+  user_data              = data.cloudinit_config.this[0].rendered
   update_default_version = true
 
   block_device_mappings {
