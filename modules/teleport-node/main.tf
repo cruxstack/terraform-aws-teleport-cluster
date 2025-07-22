@@ -211,7 +211,7 @@ locals {
 
 # ---------------------------------------------------------------------- iam ---
 
-data "template_cloudinit_config" "this" {
+data "cloudinit_config" "this" {
   count = module.this.enabled ? 1 : 0
 
   gzip          = true

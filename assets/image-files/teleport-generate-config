@@ -18,15 +18,15 @@ get_aws_metadata() {
 # ------------------------------------------------------------------- config ---
 
 if getent passwd teleport >/dev/null 2>&1 && getent group adm >/dev/null 2>&1; then
-    if [ ! -d /var/lib/teleport ]; then
-        mkdir -p /var/lib/teleport
-    fi
-    chown -R teleport:adm /var/lib/teleport
+  if [ ! -d /var/lib/teleport ]; then
+    mkdir -p /var/lib/teleport
+  fi
+  chown -R teleport:adm /var/lib/teleport
 fi
 
 source "/etc/teleport.d/conf"
 
-echo "${TELEPORT_ROLE}" >> "/etc/teleport.d/role.${TELEPORT_ROLE}"
+echo "${TELEPORT_ROLE}" >>"/etc/teleport.d/role.${TELEPORT_ROLE}"
 
 INSTANCE_HOSTNAME=$(get_aws_metadata "meta-data/local-hostname")
 INSTANCE_PRIVATE_IP=$(get_aws_metadata "meta-data/local-ipv4")
@@ -34,7 +34,7 @@ INSTANCE_PRIVATE_IP=$(get_aws_metadata "meta-data/local-ipv4")
 export TELEPORT_NODENAME=${INSTANCE_HOSTNAME}
 export TELEPORT_ADVERTISE_IP=${INSTANCE_PRIVATE_IP}
 
-cat "$TELEPORT_CONFIG_TEMPLATE_PATH" | envsubst > "${TELEPORT_CONFIG_PATH}"
+cat "$TELEPORT_CONFIG_TEMPLATE_PATH" | envsubst >"${TELEPORT_CONFIG_PATH}"
 
 chmod 664 "${TELEPORT_CONFIG_PATH}"
 if getent passwd teleport >/dev/null 2>&1 && getent group adm >/dev/null 2>&1; then
@@ -73,5 +73,3 @@ elif [[ "${TELEPORT_ROLE}" == "node" ]]; then
   systemctl start --no-block teleport-node.service
 
 fi
-
-
