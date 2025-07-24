@@ -14,8 +14,9 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
       - name: Terraform Setup
-        run: |
-          terraform init
+        run:  terraform init
+      - name: Terraform Validate
+        run:  terraform validate
       - name: Lint Terraform
         uses: reviewdog/action-tflint@master
         with:
