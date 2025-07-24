@@ -21,12 +21,7 @@ locals {
 
   is_teleport_and_logs_bucket_same = local.artifacts_bucket_name == local.logs_bucket_name
 
-  instance_config = {
-    auth  = merge({ sizes = ["t3.micro", "t3a.micro"], count = 1 }, lookup(var.instance_config, "auth", {}))
-    node  = merge({ sizes = ["t3.micro", "t3a.micro"], count = 1 }, lookup(var.instance_config, "node", {}))
-    proxy = merge({ sizes = ["t3.micro", "t3a.micro"], count = 1 }, lookup(var.instance_config, "proxy", {}))
-  }
-}
+  instance_config = var.instance_config
 
 data "aws_caller_identity" "current" {
   count = module.this.enabled && var.aws_account_id == "" ? 1 : 0
