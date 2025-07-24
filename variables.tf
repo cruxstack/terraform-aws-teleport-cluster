@@ -29,17 +29,17 @@ variable "instance_config" {
     auth = optional(object({
       count         = optional(number, 1)
       sizes         = optional(list(string), ["t3.micro", "t3a.micro"])
-      allowed_cidrs = optional(string, ["0.0.0.0/0"])
+      allowed_cidrs = optional(list(string), ["0.0.0.0/0"])
     }), {})
     node = optional(object({
       count         = optional(number, 1)
       sizes         = optional(list(string), ["t3.micro", "t3a.micro"])
-      allowed_cidrs = optional(string, ["0.0.0.0/0"])
+      allowed_cidrs = optional(list(string), ["0.0.0.0/0"])
     }), {})
     proxy = optional(object({
       count         = optional(number, 1)
       sizes         = optional(list(string), ["t3.micro", "t3a.micro"])
-      allowed_cidrs = optional(string, ["0.0.0.0/0"])
+      allowed_cidrs = optional(list(string), ["0.0.0.0/0"])
     }), {})
   })
   description = "Configuration for the instances. Each type (`auth`, `node`, `proxy`) contains an object with `count`, `sizes`, and `allowed_cidrs`."
