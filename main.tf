@@ -76,16 +76,17 @@ module "auth_servers" {
 
   experimental = local.teleport_experimental_mode
 
-  dns_parent_zone_id     = var.dns_parent_zone_id
-  dns_parent_zone_name   = var.dns_parent_zone_name
-  artifacts_bucket_name  = local.artifacts_bucket_name
-  logs_bucket_name       = local.logs_bucket_name
-  vpc_id                 = var.vpc_id
-  vpc_private_subnet_ids = var.vpc_private_subnet_ids
-  vpc_public_subnet_ids  = var.vpc_public_subnet_ids
-  aws_account_id         = local.aws_account_id
-  aws_kv_namespace       = local.aws_kv_namespace
-  aws_region_name        = local.aws_region_name
+  dns_parent_zone_id               = var.dns_parent_zone_id
+  dns_parent_zone_name             = var.dns_parent_zone_name
+  artifacts_bucket_name            = local.artifacts_bucket_name
+  logs_bucket_name                 = local.logs_bucket_name
+  vpc_id                           = var.vpc_id
+  vpc_private_subnet_ids           = var.vpc_private_subnet_ids
+  vpc_public_subnet_ids            = var.vpc_public_subnet_ids
+  vpc_security_group_allowed_cirds = local.instance_config.auth.allowed_cirds
+  aws_account_id                   = local.aws_account_id
+  aws_kv_namespace                 = local.aws_kv_namespace
+  aws_region_name                  = local.aws_region_name
 
   context = module.teleport_cluster_label.context
 }
@@ -111,16 +112,17 @@ module "proxy_servers" {
 
   experimental = local.teleport_experimental_mode
 
-  dns_parent_zone_id     = var.dns_parent_zone_id
-  dns_parent_zone_name   = var.dns_parent_zone_name
-  artifacts_bucket_name  = local.artifacts_bucket_name # todo - create bucket with module
-  logs_bucket_name       = local.logs_bucket_name
-  vpc_id                 = var.vpc_id
-  vpc_private_subnet_ids = var.vpc_private_subnet_ids
-  vpc_public_subnet_ids  = var.vpc_public_subnet_ids
-  aws_account_id         = local.aws_account_id
-  aws_kv_namespace       = local.aws_kv_namespace
-  aws_region_name        = local.aws_region_name
+  dns_parent_zone_id               = var.dns_parent_zone_id
+  dns_parent_zone_name             = var.dns_parent_zone_name
+  artifacts_bucket_name            = local.artifacts_bucket_name # todo - create bucket with module
+  logs_bucket_name                 = local.logs_bucket_name
+  vpc_id                           = var.vpc_id
+  vpc_private_subnet_ids           = var.vpc_private_subnet_ids
+  vpc_public_subnet_ids            = var.vpc_public_subnet_ids
+  vpc_security_group_allowed_cirds = local.instance_config.proxy.allowed_cirds
+  aws_account_id                   = local.aws_account_id
+  aws_kv_namespace                 = local.aws_kv_namespace
+  aws_region_name                  = local.aws_region_name
 
   context = module.teleport_cluster_label.context
 }
@@ -146,16 +148,17 @@ module "node_servers" {
 
   experimental = local.teleport_experimental_mode
 
-  dns_parent_zone_id     = var.dns_parent_zone_id
-  dns_parent_zone_name   = var.dns_parent_zone_name
-  artifacts_bucket_name  = local.artifacts_bucket_name # todo - create bucket with module
-  logs_bucket_name       = local.logs_bucket_name
-  vpc_id                 = var.vpc_id
-  vpc_private_subnet_ids = var.vpc_private_subnet_ids
-  vpc_public_subnet_ids  = var.vpc_public_subnet_ids
-  aws_account_id         = local.aws_account_id
-  aws_kv_namespace       = local.aws_kv_namespace
-  aws_region_name        = local.aws_region_name
+  dns_parent_zone_id               = var.dns_parent_zone_id
+  dns_parent_zone_name             = var.dns_parent_zone_name
+  artifacts_bucket_name            = local.artifacts_bucket_name # todo - create bucket with module
+  logs_bucket_name                 = local.logs_bucket_name
+  vpc_id                           = var.vpc_id
+  vpc_private_subnet_ids           = var.vpc_private_subnet_ids
+  vpc_public_subnet_ids            = var.vpc_public_subnet_ids
+  vpc_security_group_allowed_cirds = local.instance_config.node.allowed_cirds
+  aws_account_id                   = local.aws_account_id
+  aws_kv_namespace                 = local.aws_kv_namespace
+  aws_region_name                  = local.aws_region_name
 
   context = module.teleport_cluster_label.context
 }
