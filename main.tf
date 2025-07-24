@@ -79,7 +79,7 @@ module "auth_servers" {
   vpc_id                           = var.vpc_id
   vpc_private_subnet_ids           = var.vpc_private_subnet_ids
   vpc_public_subnet_ids            = var.vpc_public_subnet_ids
-  vpc_security_group_allowed_cirds = local.instance_config.auth.allowed_cirds
+  vpc_security_group_allowed_cidrs = local.instance_config.auth.allowed_cirds
   aws_account_id                   = local.aws_account_id
   aws_kv_namespace                 = local.aws_kv_namespace
   aws_region_name                  = local.aws_region_name
@@ -115,7 +115,7 @@ module "proxy_servers" {
   vpc_id                           = var.vpc_id
   vpc_private_subnet_ids           = var.vpc_private_subnet_ids
   vpc_public_subnet_ids            = var.vpc_public_subnet_ids
-  vpc_security_group_allowed_cirds = local.instance_config.proxy.allowed_cirds
+  vpc_security_group_allowed_cidrs = local.instance_config.proxy.allowed_cirds
   aws_account_id                   = local.aws_account_id
   aws_kv_namespace                 = local.aws_kv_namespace
   aws_region_name                  = local.aws_region_name
@@ -151,7 +151,7 @@ module "node_servers" {
   vpc_id                           = var.vpc_id
   vpc_private_subnet_ids           = var.vpc_private_subnet_ids
   vpc_public_subnet_ids            = var.vpc_public_subnet_ids
-  vpc_security_group_allowed_cirds = local.instance_config.node.allowed_cirds
+  vpc_security_group_allowed_cidrs = local.instance_config.node.allowed_cirds
   aws_account_id                   = local.aws_account_id
   aws_kv_namespace                 = local.aws_kv_namespace
   aws_region_name                  = local.aws_region_name
