@@ -411,19 +411,20 @@ module "security_group" {
   preserve_security_group_id = true
   allow_all_egress           = true
 
-  rules = compact([{
-    key                      = "group"
-    type                     = "ingress"
-    from_port                = 0
-    to_port                  = 0
-    protocol                 = "all"
-    description              = "allow all group ingress"
-    cidr_blocks              = []
-    ipv6_cidr_blocks         = []
-    source_security_group_id = null
-    self                     = true
-    },
-    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
+  rules = flatten([
+    [{
+      key                      = "group"
+      type                     = "ingress"
+      from_port                = 0
+      to_port                  = 0
+      protocol                 = "all"
+      description              = "allow all group ingress"
+      cidr_blocks              = []
+      ipv6_cidr_blocks         = []
+      source_security_group_id = null
+      self                     = true
+    }],
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? [{
       key                      = "auth"
       type                     = "ingress"
       from_port                = 3025
@@ -434,8 +435,8 @@ module "security_group" {
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
-    } : null,
-    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
+    }] : [],
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? [{
       key                      = "node-ssh"
       type                     = "ingress"
       from_port                = 3022
@@ -446,8 +447,8 @@ module "security_group" {
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
-    } : null,
-    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
+    }] : [],
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? [{
       key                      = "proxy-ssh"
       type                     = "ingress"
       from_port                = 3023
@@ -458,8 +459,8 @@ module "security_group" {
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
-    } : null,
-    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
+    }] : [],
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? [{
       key                      = "proxy-reverse-ssh"
       type                     = "ingress"
       from_port                = 3024
@@ -470,8 +471,8 @@ module "security_group" {
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
-    } : null,
-    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
+    }] : [],
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? [{
       key                      = "proxy-https"
       type                     = "ingress"
       from_port                = 443
@@ -482,8 +483,8 @@ module "security_group" {
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
-    } : null,
-    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
+    }] : [],
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? [{
       key                      = "proxy-web"
       type                     = "ingress"
       from_port                = 3080
@@ -494,8 +495,8 @@ module "security_group" {
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
-    } : null,
-    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
+    }] : [],
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? [{
       key                      = "proxy-mysql"
       type                     = "ingress"
       from_port                = 3036
@@ -506,7 +507,7 @@ module "security_group" {
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
-    } : null,
+    }] : [],
   ])
 
   tags    = merge(module.node_type_label.tags, { Name = module.node_type_label.id })
