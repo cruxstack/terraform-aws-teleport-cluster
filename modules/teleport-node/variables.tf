@@ -90,7 +90,7 @@ variable "vpc_id" {
   type = string
 }
 
-variable "vpc_security_group_allowed_cirds" {
+variable "vpc_security_group_allowed_cidrs" {
   type    = list(string)
   default = ["0.0.0.0/0"]
 }

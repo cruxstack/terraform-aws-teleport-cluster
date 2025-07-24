@@ -423,86 +423,86 @@ module "security_group" {
     source_security_group_id = null
     self                     = true
     },
-    length(var.vpc_security_group_allowed_cirds) > 0 ? {
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
       key                      = "auth"
       type                     = "ingress"
       from_port                = 3025
       to_port                  = 3025
       protocol                 = "tcp"
       description              = "allow auth traffic"
-      cidr_blocks              = var.vpc_security_group_allowed_cirds
+      cidr_blocks              = var.vpc_security_group_allowed_cidrs
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
     } : null,
-    length(var.vpc_security_group_allowed_cirds) > 0 ? {
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
       key                      = "node-ssh"
       type                     = "ingress"
       from_port                = 3022
       to_port                  = 3022
       protocol                 = "tcp"
       description              = "allow teleport node ssh"
-      cidr_blocks              = var.vpc_security_group_allowed_cirds
+      cidr_blocks              = var.vpc_security_group_allowed_cidrs
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
     } : null,
-    length(var.vpc_security_group_allowed_cirds) > 0 ? {
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
       key                      = "proxy-ssh"
       type                     = "ingress"
       from_port                = 3023
       to_port                  = 3023
       protocol                 = "tcp"
       description              = "allow teleport proxy ssh"
-      cidr_blocks              = var.vpc_security_group_allowed_cirds
+      cidr_blocks              = var.vpc_security_group_allowed_cidrs
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
     } : null,
-    length(var.vpc_security_group_allowed_cirds) > 0 ? {
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
       key                      = "proxy-reverse-ssh"
       type                     = "ingress"
       from_port                = 3024
       to_port                  = 3024
       protocol                 = "tcp"
       description              = "allow teleport proxy reverse-ssh"
-      cidr_blocks              = var.vpc_security_group_allowed_cirds
+      cidr_blocks              = var.vpc_security_group_allowed_cidrs
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
     } : null,
-    length(var.vpc_security_group_allowed_cirds) > 0 ? {
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
       key                      = "proxy-https"
       type                     = "ingress"
       from_port                = 443
       to_port                  = 443
       protocol                 = "tcp"
       description              = "allow teleport proxy https"
-      cidr_blocks              = var.vpc_security_group_allowed_cirds
+      cidr_blocks              = var.vpc_security_group_allowed_cidrs
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
     } : null,
-    length(var.vpc_security_group_allowed_cirds) > 0 ? {
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
       key                      = "proxy-web"
       type                     = "ingress"
       from_port                = 3080
       to_port                  = 3080
       protocol                 = "tcp"
       description              = "allow teleport proxy (alternative) https"
-      cidr_blocks              = var.vpc_security_group_allowed_cirds
+      cidr_blocks              = var.vpc_security_group_allowed_cidrs
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
     } : null,
-    length(var.vpc_security_group_allowed_cirds) > 0 ? {
+    length(var.vpc_security_group_allowed_cidrs) > 0 ? {
       key                      = "proxy-mysql"
       type                     = "ingress"
       from_port                = 3036
       to_port                  = 3036
       protocol                 = "tcp"
       description              = "allow teleport proxy db connections"
-      cidr_blocks              = var.vpc_security_group_allowed_cirds
+      cidr_blocks              = var.vpc_security_group_allowed_cidrs
       ipv6_cidr_blocks         = []
       source_security_group_id = null
       self                     = null
