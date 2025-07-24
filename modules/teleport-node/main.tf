@@ -32,6 +32,38 @@ locals {
   vpc_security_group_ids   = var.vpc_security_group_ids
   vpc_private_subnet_ids   = var.vpc_private_subnet_ids
   vpc_public_subnet_ids    = var.vpc_public_subnet_ids
+
+  iam_role_attached_policy_arns = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+  iam_role_attached_policies = flatten([
+    module.this.enabled ? [
+      {
+        name   = "ec2-management-access"
+        policy = one(data.aws_iam_policy_document.ec2_management[0].json)
+      },
+      {
+        name   = "teleport-base-access"
+        policy = one(data.aws_iam_policy_document.base_access[0].json)
+      }
+    ] : [],
+    contains(["auth"], local.teleport_node_type) ? [
+      {
+        name   = "teleport-auth-access"
+        policy = one(data.aws_iam_policy_document.auth_access[0].json)
+      }
+    ] : [],
+    contains(["node"], local.teleport_node_type) ? [
+      {
+        name   = "teleport-node-access"
+        policy = one(data.aws_iam_policy_document.node_access[0].json)
+      }
+    ] : [],
+    contains(["proxy"], local.teleport_node_type) ? [
+      {
+        name   = "teleport-proxy-access"
+        policy = one(data.aws_iam_policy_document.proxy_access[0].json)
+      }
+    ] : [],
+  ])
 }
 
 module "dns_label" {
@@ -209,7 +241,7 @@ locals {
   }
 }
 
-# ---------------------------------------------------------------------- iam ---
+# ---------------------------------------------------------------- cloudinit ---
 
 data "cloudinit_config" "this" {
   count = module.this.enabled ? 1 : 0
@@ -538,48 +570,22 @@ resource "aws_iam_role" "this" {
     }]
   })
 
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
-  ]
-
-  inline_policy {
-    name   = "ec2-management-access"
-    policy = data.aws_iam_policy_document.ec2_management[0].json
-  }
-
-  inline_policy {
-    name   = "teleport-base-access"
-    policy = data.aws_iam_policy_document.base_access[0].json
-  }
-
-  dynamic "inline_policy" {
-    for_each = contains(["auth"], local.teleport_node_type) ? [true] : []
-
-    content {
-      name   = "teleport-auth-access"
-      policy = data.aws_iam_policy_document.auth_access[0].json
-    }
-  }
-
-  dynamic "inline_policy" {
-    for_each = contains(["node"], local.teleport_node_type) ? [true] : []
-
-    content {
-      name   = "teleport-node-access"
-      policy = data.aws_iam_policy_document.node_access[0].json
-    }
-  }
-
-  dynamic "inline_policy" {
-    for_each = contains(["proxy"], local.teleport_node_type) ? [true] : []
-
-    content {
-      name   = "teleport-proxy-access"
-      policy = data.aws_iam_policy_document.proxy_access[0].json
-    }
-  }
-
   tags = module.node_type_label.tags
+}
+
+resource "aws_iam_role_policy_attachment" "this" {
+  for_each = toset(local.iam_role_attached_policy_arns)
+
+  role       = aws_iam_role.this[0].name
+  policy_arn = each.key
+}
+
+resource "aws_iam_role_policy" "this" {
+  for_each = { for x in local.iam_role_attached_policies : x.name => x }
+
+  role   = aws_iam_role.this[0].name
+  name   = each.key
+  policy = each.value.policy
 }
 
 data "aws_iam_policy_document" "ec2_management" {
