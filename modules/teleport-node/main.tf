@@ -38,29 +38,29 @@ locals {
     module.this.enabled ? [
       {
         name   = "ec2-management-access"
-        policy = one(data.aws_iam_policy_document.ec2_management[0].json)
+        policy = one(data.aws_iam_policy_document.ec2_management.*.json)
       },
       {
         name   = "teleport-base-access"
-        policy = one(data.aws_iam_policy_document.base_access[0].json)
+        policy = one(data.aws_iam_policy_document.base_access.*.json)
       }
     ] : [],
     contains(["auth"], local.teleport_node_type) ? [
       {
         name   = "teleport-auth-access"
-        policy = one(data.aws_iam_policy_document.auth_access[0].json)
+        policy = one(data.aws_iam_policy_document.auth_access.*.json)
       }
     ] : [],
     contains(["node"], local.teleport_node_type) ? [
       {
         name   = "teleport-node-access"
-        policy = one(data.aws_iam_policy_document.node_access[0].json)
+        policy = one(data.aws_iam_policy_document.node_access.*.json)
       }
     ] : [],
     contains(["proxy"], local.teleport_node_type) ? [
       {
         name   = "teleport-proxy-access"
-        policy = one(data.aws_iam_policy_document.proxy_access[0].json)
+        policy = one(data.aws_iam_policy_document.proxy_access.*.json)
       }
     ] : [],
   ])
