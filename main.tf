@@ -55,9 +55,9 @@ resource "random_string" "teleport_cluster_random_suffix" {
 module "auth_servers" {
   source = "./modules/teleport-node"
 
-  instance_sizes        = local.instance_config.auth.sizes
-  instance_count        = local.instance_config.auth.count
-  instance_spot_enabled = local.instance_config.auth.spot
+  instance_sizes = local.instance_config.auth.sizes
+  instance_count = local.instance_config.auth.count
+  instance_spot  = local.instance_config.auth.spot
 
   teleport_cluster_name      = local.teleport_cluster_name
   teleport_image_id          = local.teleport_image_id
@@ -91,9 +91,9 @@ module "auth_servers" {
 module "proxy_servers" {
   source = "./modules/teleport-node"
 
-  instance_sizes        = local.instance_config.proxy.sizes
-  instance_count        = local.instance_config.proxy.count
-  instance_spot_enabled = local.instance_config.proxy.spot
+  instance_sizes = local.instance_config.proxy.sizes
+  instance_count = local.instance_config.proxy.count
+  instance_spot  = local.instance_config.proxy.spot
 
   teleport_cluster_name      = local.teleport_cluster_name
   teleport_image_id          = local.teleport_image_id
@@ -128,9 +128,9 @@ module "proxy_servers" {
 module "node_servers" {
   source = "./modules/teleport-node"
 
-  instance_sizes        = local.instance_config.node.sizes
-  instance_count        = local.instance_config.node.count
-  instance_spot_enabled = local.instance_config.node.spot
+  instance_sizes = local.instance_config.node.sizes
+  instance_count = local.instance_config.node.count
+  instance_spot  = local.instance_config.node.spot
 
   teleport_cluster_name      = local.teleport_cluster_name
   teleport_image_id          = local.teleport_image_id
