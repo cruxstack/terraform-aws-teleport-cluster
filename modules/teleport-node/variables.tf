@@ -62,9 +62,12 @@ variable "instance_sizes" {
   default = ["t3.medium", "t3a.medium"]
 }
 
-variable "instance_spot_enabled" {
-  type    = bool
-  default = true
+variable "instance_spot" {
+  type = object({
+    enabled             = optional(bool, true)
+    allocation_strategy = optional(string, "capacity-optimized")
+  })
+  default = {}
 }
 
 # ----------------------------------------------------------- infrastructure ---

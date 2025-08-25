@@ -19,11 +19,11 @@ locals {
   logs_bucket_name      = var.logs_bucket_name
   experimental          = var.experimental
 
-  desired_capacity      = local.teleport_setup_enabled ? (local.teleport_node_type == "auth" ? 1 : 0) : var.instance_count
-  min_capacity          = local.teleport_setup_enabled ? (local.teleport_node_type == "auth" ? 1 : 0) : var.instance_count
-  max_capacity          = local.teleport_setup_enabled ? (local.teleport_node_type == "auth" ? 1 : 0) : var.instance_count
-  instance_sizes        = var.instance_sizes
-  instance_spot_enabled = var.instance_spot_enabled
+  desired_capacity = local.teleport_setup_enabled ? (local.teleport_node_type == "auth" ? 1 : 0) : var.instance_count
+  min_capacity     = local.teleport_setup_enabled ? (local.teleport_node_type == "auth" ? 1 : 0) : var.instance_count
+  max_capacity     = local.teleport_setup_enabled ? (local.teleport_node_type == "auth" ? 1 : 0) : var.instance_count
+  instance_sizes   = var.instance_sizes
+  instance_spot    = var.instance_spot
 
   dns_name           = "${module.dns_label.id}.${var.dns_parent_zone_name}"
   dns_parent_zone_id = var.dns_parent_zone_id
@@ -339,8 +339,8 @@ resource "aws_autoscaling_group" "this" {
   mixed_instances_policy {
     instances_distribution {
       on_demand_base_capacity                  = 0
-      on_demand_percentage_above_base_capacity = local.instance_spot_enabled ? 0 : 100
-      spot_allocation_strategy                 = "capacity-optimized"
+      on_demand_percentage_above_base_capacity = local.instance_spot.enabled ? 0 : 100
+      spot_allocation_strategy                 = local.instance_spot.allocation_strategy
       spot_instance_pools                      = 0
     }
 
