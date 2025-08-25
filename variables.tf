@@ -29,16 +29,19 @@ variable "instance_config" {
     auth = optional(object({
       count         = optional(number, 1)
       sizes         = optional(list(string), ["t3.micro", "t3a.micro"])
+      spot          = optional(bool, true)
       allowed_cidrs = optional(list(string), ["0.0.0.0/0"])
     }), {})
     node = optional(object({
       count         = optional(number, 1)
       sizes         = optional(list(string), ["t3.micro", "t3a.micro"])
+      spot          = optional(bool, true)
       allowed_cidrs = optional(list(string), ["0.0.0.0/0"])
     }), {})
     proxy = optional(object({
       count         = optional(number, 1)
       sizes         = optional(list(string), ["t3.micro", "t3a.micro"])
+      spot          = optional(bool, true)
       allowed_cidrs = optional(list(string), ["0.0.0.0/0"])
     }), {})
   })

@@ -52,7 +52,6 @@ variable "experimental" {
 
 # ----------------------------------------------------------------- instance ---
 
-
 variable "instance_count" {
   type    = number
   default = 1
@@ -61,6 +60,11 @@ variable "instance_count" {
 variable "instance_sizes" {
   type    = list(string)
   default = ["t3.medium", "t3a.medium"]
+}
+
+variable "instance_spot_enabled" {
+  type    = bool
+  default = true
 }
 
 # ----------------------------------------------------------- infrastructure ---
