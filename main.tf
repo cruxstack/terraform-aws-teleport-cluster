@@ -2,8 +2,8 @@ locals {
   enabled = coalesce(var.enabled, module.this.enabled, true)
   name    = coalesce(var.name, module.this.name, "teleport-cluster-${random_string.teleport_cluster_random_suffix.result}")
 
-  aws_account_id   = var.aws_account_id != "" ? var.aws_account_id : try(data.aws_caller_identity.current[0].account_id, "")
-  aws_region_name  = var.aws_region_name != "" ? var.aws_region_name : try(data.aws_region.current[0].name, "")
+  aws_account_id   = var.aws_account_id != "" ? var.aws_account_id : one(data.aws_caller_identity.current.*.account_id)
+  aws_region_name  = var.aws_region_name != "" ? var.aws_region_name : one(data.aws_region.current.*.region)
   aws_kv_namespace = trim(coalesce(var.aws_kv_namespace, "teleport-cluster/${module.teleport_cluster_label.id}"), "/")
 
   teleport_cluster_name          = join("-", [module.teleport_cluster_label.name, module.teleport_cluster_label.stage, module.teleport_cluster_label.environment])
