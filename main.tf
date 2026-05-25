@@ -227,11 +227,19 @@ resource "aws_dynamodb_table" "events" {
 
   global_secondary_index {
     name            = "timesearchV2"
-    hash_key        = "CreatedAtDate"
-    range_key       = "CreatedAt"
     write_capacity  = 10
     read_capacity   = 10
     projection_type = "ALL"
+
+    key_schema {
+      attribute_name = "CreatedAtDate"
+      key_type       = "HASH"
+    }
+
+    key_schema {
+      attribute_name = "CreatedAt"
+      key_type       = "RANGE"
+    }
   }
 
   lifecycle {
@@ -274,7 +282,6 @@ resource "aws_dynamodb_table" "locks" {
   deletion_protection_enabled = var.ddb_deletion_protection_enabled
 
   hash_key = "Lock"
-
 
   lifecycle {
     ignore_changes = [
