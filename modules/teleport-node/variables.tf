@@ -33,7 +33,19 @@ variable "teleport_letsencrypt_email" {
 }
 
 variable "teleport_node_type" {
-  type = string
+  type        = string
+  description = "Type of Teleport server this module manages. Only `auth` and `proxy` are supported in v2 (the `node` role was removed)."
+
+  validation {
+    condition     = contains(["auth", "proxy"], var.teleport_node_type)
+    error_message = "teleport_node_type must be one of: auth, proxy."
+  }
+}
+
+variable "teleport_public_addr" {
+  type        = string
+  description = "Public address of the consolidated Teleport NLB. Used to populate `auth_service.public_addr` for the auth role."
+  default     = ""
 }
 
 variable "teleport_security_group_ids" {
@@ -97,11 +109,6 @@ variable "vpc_id" {
   type = string
 }
 
-variable "vpc_security_group_allowed_cidrs" {
-  type    = list(string)
-  default = ["0.0.0.0/0"]
-}
-
 variable "vpc_security_group_ids" {
   type    = list(string)
   default = []
@@ -115,6 +122,19 @@ variable "vpc_private_subnet_ids" {
 variable "vpc_public_subnet_ids" {
   type    = list(string)
   default = []
+}
+
+# ------------------------------------------------------------ load-balancer ---
+
+variable "target_group_arns" {
+  type        = list(string)
+  description = "Target group ARNs the ASG should register instances with. Provided by the consolidated `teleport-nlb` submodule in v2."
+  default     = []
+}
+
+variable "nlb_security_group_id" {
+  type        = string
+  description = "Security group ID of the consolidated NLB. The instance security group accepts ingress from this SG on the Teleport ports relevant to the node type (3025 for auth, 3080 for proxy). Required."
 }
 
 # ---------------------------------------------------------------- component ---

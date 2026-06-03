@@ -22,6 +22,10 @@ locals {
   is_teleport_and_logs_bucket_same = local.artifacts_bucket_name == local.logs_bucket_name
 
   instance_config = var.instance_config
+
+  # Honour the explicit override when set; otherwise tie protection to the
+  # inverse of experimental mode so ephemeral clusters tear down cleanly.
+  deletion_protection_enabled = var.deletion_protection_enabled != null ? var.deletion_protection_enabled : !local.teleport_experimental_mode
 }
 
 data "aws_caller_identity" "current" {
@@ -50,6 +54,29 @@ resource "random_string" "teleport_cluster_random_suffix" {
   upper   = false
 }
 
+# ====================================================================== nlb ===
+
+module "teleport_nlb" {
+  source = "./modules/teleport-nlb"
+
+  nlb_internal                = var.nlb_internal
+  nlb_allowed_cidrs           = var.nlb_allowed_cidrs
+  nlb_auth_allowed_cidrs      = var.nlb_auth_allowed_cidrs
+  nlb_privatelink_enabled     = var.nlb_privatelink_enabled
+  nlb_privatelink_config      = var.nlb_privatelink_config
+  deletion_protection_enabled = local.deletion_protection_enabled
+
+  dns_parent_zone_id        = var.dns_parent_zone_id
+  dns_parent_zone_name      = var.dns_parent_zone_name
+  logs_bucket_name          = local.logs_bucket_name
+  vpc_id                    = var.vpc_id
+  vpc_private_subnet_ids    = var.vpc_private_subnet_ids
+  vpc_public_subnet_ids     = var.vpc_public_subnet_ids
+  cluster_security_group_id = module.security_group.id
+
+  context = module.teleport_cluster_label.context
+}
+
 # ================================================================== cluster ===
 
 module "auth_servers" {
@@ -64,6 +91,7 @@ module "auth_servers" {
   teleport_letsencrypt_email = local.teleport_letsencrypt_email
   teleport_node_type         = "auth"
   teleport_setup_mode        = local.teleport_setup_mode
+  teleport_public_addr       = module.teleport_nlb.teleport_dns_name
 
   teleport_bucket_name           = module.s3_bucket.bucket_id
   teleport_ddb_table_events_name = aws_dynamodb_table.events[0].name
@@ -73,17 +101,19 @@ module "auth_servers" {
 
   experimental = local.teleport_experimental_mode
 
-  dns_parent_zone_id               = var.dns_parent_zone_id
-  dns_parent_zone_name             = var.dns_parent_zone_name
-  artifacts_bucket_name            = local.artifacts_bucket_name
-  logs_bucket_name                 = local.logs_bucket_name
-  vpc_id                           = var.vpc_id
-  vpc_private_subnet_ids           = var.vpc_private_subnet_ids
-  vpc_public_subnet_ids            = var.vpc_public_subnet_ids
-  vpc_security_group_allowed_cidrs = local.instance_config.auth.allowed_cidrs
-  aws_account_id                   = local.aws_account_id
-  aws_kv_namespace                 = local.aws_kv_namespace
-  aws_region_name                  = local.aws_region_name
+  target_group_arns     = compact([module.teleport_nlb.target_group_arns.auth_ssh])
+  nlb_security_group_id = module.teleport_nlb.security_group_id
+
+  dns_parent_zone_id     = var.dns_parent_zone_id
+  dns_parent_zone_name   = var.dns_parent_zone_name
+  artifacts_bucket_name  = local.artifacts_bucket_name
+  logs_bucket_name       = local.logs_bucket_name
+  vpc_id                 = var.vpc_id
+  vpc_private_subnet_ids = var.vpc_private_subnet_ids
+  vpc_public_subnet_ids  = var.vpc_public_subnet_ids
+  aws_account_id         = local.aws_account_id
+  aws_kv_namespace       = local.aws_kv_namespace
+  aws_region_name        = local.aws_region_name
 
   context = module.teleport_cluster_label.context
 }
@@ -101,7 +131,7 @@ module "proxy_servers" {
   teleport_node_type         = "proxy"
   teleport_setup_mode        = local.teleport_setup_mode
 
-  teleport_auth_address          = module.auth_servers.lb_dns_name
+  teleport_auth_address          = module.teleport_nlb.teleport_dns_name
   teleport_bucket_name           = module.s3_bucket.bucket_id
   teleport_ddb_table_events_name = aws_dynamodb_table.events[0].name
   teleport_ddb_table_locks_name  = aws_dynamodb_table.locks[0].name
@@ -110,54 +140,19 @@ module "proxy_servers" {
 
   experimental = local.teleport_experimental_mode
 
-  dns_parent_zone_id               = var.dns_parent_zone_id
-  dns_parent_zone_name             = var.dns_parent_zone_name
-  artifacts_bucket_name            = local.artifacts_bucket_name # todo - create bucket with module
-  logs_bucket_name                 = local.logs_bucket_name
-  vpc_id                           = var.vpc_id
-  vpc_private_subnet_ids           = var.vpc_private_subnet_ids
-  vpc_public_subnet_ids            = var.vpc_public_subnet_ids
-  vpc_security_group_allowed_cidrs = local.instance_config.proxy.allowed_cidrs
-  aws_account_id                   = local.aws_account_id
-  aws_kv_namespace                 = local.aws_kv_namespace
-  aws_region_name                  = local.aws_region_name
+  target_group_arns     = compact([module.teleport_nlb.target_group_arns.proxy_web])
+  nlb_security_group_id = module.teleport_nlb.security_group_id
 
-  context = module.teleport_cluster_label.context
-}
-
-module "node_servers" {
-  source = "./modules/teleport-node"
-
-  instance_sizes = local.instance_config.node.sizes
-  instance_count = local.instance_config.node.count
-  instance_spot  = local.instance_config.node.spot
-
-  teleport_cluster_name      = local.teleport_cluster_name
-  teleport_image_id          = local.teleport_image_id
-  teleport_letsencrypt_email = local.teleport_letsencrypt_email
-  teleport_node_type         = "node"
-  teleport_setup_mode        = local.teleport_setup_mode
-
-  teleport_auth_address          = module.auth_servers.lb_dns_name
-  teleport_bucket_name           = module.s3_bucket.bucket_id
-  teleport_ddb_table_events_name = aws_dynamodb_table.events[0].name
-  teleport_ddb_table_locks_name  = aws_dynamodb_table.locks[0].name
-  teleport_ddb_table_state_name  = aws_dynamodb_table.state[0].name
-  teleport_security_group_ids    = compact([module.security_group.id])
-
-  experimental = local.teleport_experimental_mode
-
-  dns_parent_zone_id               = var.dns_parent_zone_id
-  dns_parent_zone_name             = var.dns_parent_zone_name
-  artifacts_bucket_name            = local.artifacts_bucket_name # todo - create bucket with module
-  logs_bucket_name                 = local.logs_bucket_name
-  vpc_id                           = var.vpc_id
-  vpc_private_subnet_ids           = var.vpc_private_subnet_ids
-  vpc_public_subnet_ids            = var.vpc_public_subnet_ids
-  vpc_security_group_allowed_cidrs = local.instance_config.node.allowed_cidrs
-  aws_account_id                   = local.aws_account_id
-  aws_kv_namespace                 = local.aws_kv_namespace
-  aws_region_name                  = local.aws_region_name
+  dns_parent_zone_id     = var.dns_parent_zone_id
+  dns_parent_zone_name   = var.dns_parent_zone_name
+  artifacts_bucket_name  = local.artifacts_bucket_name # todo - create bucket with module
+  logs_bucket_name       = local.logs_bucket_name
+  vpc_id                 = var.vpc_id
+  vpc_private_subnet_ids = var.vpc_private_subnet_ids
+  vpc_public_subnet_ids  = var.vpc_public_subnet_ids
+  aws_account_id         = local.aws_account_id
+  aws_kv_namespace       = local.aws_kv_namespace
+  aws_region_name        = local.aws_region_name
 
   context = module.teleport_cluster_label.context
 }
@@ -171,7 +166,7 @@ resource "aws_dynamodb_table" "state" {
 
   name                        = "${module.teleport_cluster_label.id}-state"
   billing_mode                = "PAY_PER_REQUEST"
-  deletion_protection_enabled = var.ddb_deletion_protection_enabled
+  deletion_protection_enabled = local.deletion_protection_enabled
 
   hash_key         = "HashKey"
   range_key        = "FullPath"
@@ -212,7 +207,7 @@ resource "aws_dynamodb_table" "events" {
 
   name                        = "${module.teleport_cluster_label.id}-events"
   billing_mode                = "PAY_PER_REQUEST"
-  deletion_protection_enabled = var.ddb_deletion_protection_enabled
+  deletion_protection_enabled = local.deletion_protection_enabled
 
   hash_key  = "SessionID"
   range_key = "EventIndex"
@@ -279,7 +274,7 @@ resource "aws_dynamodb_table" "locks" {
 
   name                        = "${module.teleport_cluster_label.id}-locks"
   billing_mode                = "PAY_PER_REQUEST"
-  deletion_protection_enabled = var.ddb_deletion_protection_enabled
+  deletion_protection_enabled = local.deletion_protection_enabled
 
   hash_key = "Lock"
 
@@ -455,4 +450,3 @@ data "aws_ami" "official_image" {
     values = [local.teleport_image_name]
   }
 }
-
