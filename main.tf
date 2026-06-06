@@ -15,6 +15,12 @@ locals {
   teleport_experimental_mode     = var.teleport_experimental_mode
   teleport_aws_account_id        = local.teleport_runtime_version_major >= 15 ? "146628656107" : "126027368216" # gravitational teleport's aws account id for ami filtering - https://goteleport.com/docs/deploy-a-cluster/deployments/aws-starter-cluster-terraform/
 
+  # PrivateLink with private DNS enabled shadows the cluster FQDN inside the
+  # producer VPC, breaking same-VPC proxy -> auth :3025 dials. Callers can
+  # override this to the NLB's raw DNS (or another non-shadowed address) to
+  # keep the auth path off PrivateLink.
+  teleport_auth_address = var.teleport_auth_address != "" ? var.teleport_auth_address : module.teleport_nlb.teleport_dns_name
+
   artifacts_bucket_name = coalesce(var.artifacts_bucket_name, local.teleport_bucket_name)
   logs_bucket_name      = coalesce(var.logs_bucket_name, local.teleport_bucket_name)
   teleport_bucket_name  = module.s3_bucket.bucket_id
@@ -131,7 +137,7 @@ module "proxy_servers" {
   teleport_node_type         = "proxy"
   teleport_setup_mode        = local.teleport_setup_mode
 
-  teleport_auth_address          = module.teleport_nlb.teleport_dns_name
+  teleport_auth_address          = local.teleport_auth_address
   teleport_bucket_name           = module.s3_bucket.bucket_id
   teleport_ddb_table_events_name = aws_dynamodb_table.events[0].name
   teleport_ddb_table_locks_name  = aws_dynamodb_table.locks[0].name

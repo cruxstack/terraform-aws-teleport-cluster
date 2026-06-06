@@ -22,6 +22,12 @@ variable "teleport_experimental_mode" {
   default     = false
 }
 
+variable "teleport_auth_address" {
+  type        = string
+  description = "Host:port (or host; `:3025` is appended automatically when no port is supplied) the proxy nodes will dial to reach the auth service. Defaults to the cluster's public FQDN (`<dns_label>.<dns_parent_zone_name>`), but that name is shadowed by PrivateLink private DNS in any VPC that hosts a consumer endpoint for this cluster — including the cluster's own producer VPC. Setting this to the NLB's raw DNS name (e.g. `module.<self>.nlb_dns_name`) or an internal address that PrivateLink does not shadow is the recommended override when running the cluster behind PrivateLink with private DNS enabled."
+  default     = ""
+}
+
 variable "deletion_protection_enabled" {
   type        = bool
   description = "Enable deletion protection on stateful resources (DynamoDB tables and the consolidated NLB). When `null` (the default) the value follows `!teleport_experimental_mode` so non-experimental clusters protect their resources while experimental clusters remain tear-down friendly."
