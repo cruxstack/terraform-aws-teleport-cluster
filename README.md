@@ -100,29 +100,30 @@ other optional variables (e.g., `name`, `tags`, etc.) provided by the
 [documentation](https://registry.terraform.io/modules/cloudposse/label/null/latest)
 for details.
 
-| Name                          | Description                                                                                                | Type           | Default         | Required |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------- | -------------- | --------------- | :------: |
-| `teleport_runtime_version`    | The runtime version of Teleport (v18 recommended).                                                         | `string`       | n/a             |   yes    |
-| `teleport_letsencrypt_email`  | The email address to use for Let's Encrypt.                                                                | `string`       | n/a             |   yes    |
-| `teleport_setup_mode`         | Toggle Teleport setup mode.                                                                                | `bool`         | `true`          |    no    |
-| `teleport_experimental_mode`  | Toggle Teleport experimental mode.                                                                         | `bool`         | `false`         |    no    |
-| `deletion_protection_enabled` | Enable deletion protection on the NLB and DynamoDB tables. `null` ⇒ follows `!teleport_experimental_mode`. | `bool`         | `null`          |    no    |
-| `instance_config`             | Configuration for the auth and proxy ASGs (`auth`, `proxy` keys with `count`, `sizes`, `spot`).            | `object`       | `{}`            |    no    |
-| `nlb_internal`                | Use an internal NLB (private subnets) instead of internet-facing (public subnets).                         | `bool`         | `true`          |    no    |
-| `nlb_allowed_cidrs`           | CIDRs allowed on the public client port (443) of the NLB.                                                  | `list(string)` | `["0.0.0.0/0"]` |    no    |
-| `nlb_auth_allowed_cidrs`      | CIDRs allowed on the auth listener (3025). Defaults to empty (cluster SG only). See bootstrap notes.       | `list(string)` | `[]`            |    no    |
-| `nlb_privatelink_enabled`     | Expose the NLB as a PrivateLink endpoint service.                                                          | `bool`         | `false`         |    no    |
-| `nlb_privatelink_config`      | PrivateLink config: `acceptance_required`, `allowed_principals`, `private_dns_name`, `supported_regions`.  | `object`       | `{}`            |    no    |
-| `artifacts_bucket_name`       | The name of the S3 bucket for artifacts.                                                                   | `string`       | `""`            |    no    |
-| `logs_bucket_name`            | The name of the S3 bucket for logs.                                                                        | `string`       | `""`            |    no    |
-| `dns_parent_zone_id`          | The ID of the parent DNS zone.                                                                             | `string`       | n/a             |   yes    |
-| `dns_parent_zone_name`        | The name of the parent DNS zone.                                                                           | `string`       | n/a             |   yes    |
-| `vpc_id`                      | The ID of the VPC to deploy resources into.                                                                | `string`       | n/a             |   yes    |
-| `vpc_private_subnet_ids`      | The IDs of the private subnets in the VPC.                                                                 | `list(string)` | n/a             |   yes    |
-| `vpc_public_subnet_ids`       | The IDs of the public subnets. Required when `nlb_internal = false`; may be empty otherwise.               | `list(string)` | `[]`            |    no    |
-| `aws_region_name`             | The name of the AWS region.                                                                                | `string`       | `""`            |    no    |
-| `aws_account_id`              | The ID of the AWS account.                                                                                 | `string`       | `""`            |    no    |
-| `aws_kv_namespace`            | The namespace or prefix for AWS SSM parameters and similar resources.                                      | `string`       | `""`            |    no    |
+| Name                          | Description                                                                                                                           | Type           | Default         | Required |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------- | --------------- | :------: |
+| `teleport_runtime_version`    | The runtime version of Teleport (v18 recommended).                                                                                    | `string`       | n/a             |   yes    |
+| `teleport_letsencrypt_email`  | The email address to use for Let's Encrypt.                                                                                           | `string`       | n/a             |   yes    |
+| `teleport_setup_mode`         | Toggle Teleport setup mode.                                                                                                           | `bool`         | `true`          |    no    |
+| `teleport_experimental_mode`  | Toggle Teleport experimental mode.                                                                                                    | `bool`         | `false`         |    no    |
+| `teleport_auth_address`       | Override the `host[:port]` proxies dial to reach auth. Empty ⇒ cluster FQDN (may be shadowed by PrivateLink private DNS — see notes). | `string`       | `""`            |    no    |
+| `deletion_protection_enabled` | Enable deletion protection on the NLB and DynamoDB tables. `null` ⇒ follows `!teleport_experimental_mode`.                            | `bool`         | `null`          |    no    |
+| `instance_config`             | Configuration for the auth and proxy ASGs (`auth`, `proxy` keys with `count`, `sizes`, `spot`).                                       | `object`       | `{}`            |    no    |
+| `nlb_internal`                | Use an internal NLB (private subnets) instead of internet-facing (public subnets).                                                    | `bool`         | `true`          |    no    |
+| `nlb_allowed_cidrs`           | CIDRs allowed on the public client port (443) of the NLB.                                                                             | `list(string)` | `["0.0.0.0/0"]` |    no    |
+| `nlb_auth_allowed_cidrs`      | CIDRs allowed on the auth listener (3025). Defaults to empty (cluster SG only). See bootstrap notes.                                  | `list(string)` | `[]`            |    no    |
+| `nlb_privatelink_enabled`     | Expose the NLB as a PrivateLink endpoint service.                                                                                     | `bool`         | `false`         |    no    |
+| `nlb_privatelink_config`      | PrivateLink config: `acceptance_required`, `allowed_principals`, `private_dns_name`, `supported_regions`.                             | `object`       | `{}`            |    no    |
+| `artifacts_bucket_name`       | The name of the S3 bucket for artifacts.                                                                                              | `string`       | `""`            |    no    |
+| `logs_bucket_name`            | The name of the S3 bucket for logs.                                                                                                   | `string`       | `""`            |    no    |
+| `dns_parent_zone_id`          | The ID of the parent DNS zone.                                                                                                        | `string`       | n/a             |   yes    |
+| `dns_parent_zone_name`        | The name of the parent DNS zone.                                                                                                      | `string`       | n/a             |   yes    |
+| `vpc_id`                      | The ID of the VPC to deploy resources into.                                                                                           | `string`       | n/a             |   yes    |
+| `vpc_private_subnet_ids`      | The IDs of the private subnets in the VPC.                                                                                            | `list(string)` | n/a             |   yes    |
+| `vpc_public_subnet_ids`       | The IDs of the public subnets. Required when `nlb_internal = false`; may be empty otherwise.                                          | `list(string)` | `[]`            |    no    |
+| `aws_region_name`             | The name of the AWS region.                                                                                                           | `string`       | `""`            |    no    |
+| `aws_account_id`              | The ID of the AWS account.                                                                                                            | `string`       | `""`            |    no    |
+| `aws_kv_namespace`            | The namespace or prefix for AWS SSM parameters and similar resources.                                                                 | `string`       | `""`            |    no    |
 
 ### Outputs
 
@@ -201,6 +202,23 @@ auth. Two ways to resolve it, in order of preference:
    `aws_vpc_endpoint` in the cluster VPC against the module's endpoint service
    and point the proxy at the endpoint DNS instead of the NLB DNS. More moving
    parts; only worth it if you have a wider PrivateLink story.
+
+#### PrivateLink with private DNS in the producer VPC
+
+Enabling `nlb_privatelink_enabled = true` together with
+`nlb_privatelink_config.private_dns_name` registers the cluster FQDN against the
+endpoint service. AWS attaches that private DNS to **every** VPC that hosts a
+consumer endpoint — including the cluster's own producer VPC if a consumer
+endpoint exists there. In that VPC the cluster FQDN now resolves to the
+PrivateLink ENI's private IPs and proxy ⇄ auth `:3025` traffic enters the NLB
+with the PrivateLink ENI IP as its source. With `nlb_internal = false` the NLB's
+security group on `:3025` admits the NAT EIPs, not the PrivateLink ENI IPs, and
+the dials silently time out.
+
+Pass `teleport_auth_address = module.<self>.teleport_nlb_dns_name` (or any other
+address that PrivateLink does not shadow) to keep the proxy → auth path off
+PrivateLink. The raw NLB DNS resolves to the NLB ENIs directly and falls inside
+`nlb_internal`'s SG-only admit rule.
 
 ## Migrating from v1.x to v2
 
